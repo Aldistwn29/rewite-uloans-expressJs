@@ -1,0 +1,17 @@
+{
+  "name": "uloan-express",
+  "version": "1.0.0",
+  "description": "uloansApps",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.4.3",
+    "express": "^5.3.0"
+  }
+}
