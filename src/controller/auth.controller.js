@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 
-const userByEmail = new Map();
+export const usersByEmail = new Map();
 let idCounter = 1;
 
 const JWT_SECRET = 'uloans_super_secret_key_2026';
@@ -10,36 +10,41 @@ const JWT_SECRET = 'uloans_super_secret_key_2026';
 export const registrasi = (req, res) => {
     const { name, email, password } = req.body;
 
-    if(!name || !email || !password){
+    if(
+        typeof name !== 'string' ||
+        typeof email !== 'string' ||
+        typeof password !== 'string' ||
+        !name.trim() ||
+        !email.trim() ||
+        !password.trim()
+    ){
         return res.status(400).json({
             error: 'Bad Request',
             message: 'field name, email, and password are required'
         });
     }
 
-    // cek apakah email sudah terdaftar
-    if(userByEmail.has(email)){
+    const normalizedEmail = email.trim().toLowerCase();
+    if(usersByEmail.has(normalizedEmail)){
         return res.status(409).json({
             error: 'Conflict',
             message: 'Email already registered'
         });
     }
 
-    // convert data user ke object
     const newUser = {
         id: idCounter++,
-        name,
-        email,
+        name: name.trim(),
+        email: normalizedEmail,
         password,
         createdAt: new Date().toISOString()
-    } ;
+    };
 
-    // save user ke map
-    userByEmail.set(email, newUser);
+    usersByEmail.set(normalizedEmail, newUser);
 
     return res.status(201).json({
         success: true,
-        message: 'Registration successful',
+        message: 'Registered successfully',
         data: {
             id: newUser.id,
             name: newUser.name,
@@ -52,23 +57,28 @@ export const registrasi = (req, res) => {
 // Login
 export const login = (req, res) => {
     const { email, password } = req.body;
-
-    if(!email || !password){
-        return res.status(400).json({
-            error: 'Bad Request',
-            message: 'field email and password are required'
-        });
-    }
-
-    const user = userByEmail.get(email);
-
     // validasi kredential
-    if(!user || user.password != password){
-        return res.status(401).json({
-            error: 'Unauthorized',
-            message: 'Invalid email or password'
-        });
-    }
+   if(
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    !email.trim() ||
+    !password
+   ){
+    return res.status(400).json({
+        error: 'Bad Request',
+        message: 'field email and password are required'
+    });
+   }
+
+   const normalizedEmail = email.trim().toLowerCase();
+   const user = usersByEmail.get(normalizedEmail);
+
+   if(!user || user.password !== password){
+    return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Invalid email or password'
+    });
+   }
 
     // buat playload untuk JWT
     const payload = {

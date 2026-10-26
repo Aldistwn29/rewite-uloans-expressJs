@@ -5,7 +5,6 @@ const JWT_SECRET = 'uloans_super_secret_key_2026';
 
 export const verfiyTonken = (req, res, next) => {
     const authHeader = req.headers.authorization;
-
     const token = authHeader && authHeader.split(' ')[1];
 
     if(!token){
