@@ -1,16 +1,62 @@
-# Dependency folders
+# Dependencies
 node_modules/
 
-# Environment variables & secrets
+# Environment variables and secrets
 .env
-.env.local
+.env.*
+!.env.example
+!.env.test.example
+
+# Private keys and certificates
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+secrets/
+.secret/
 
 # Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
+pnpm-debug.log*
 
-# OS specific files
+# Runtime files
+*.pid
+*.pid.lock
+
+# Build and coverage output
+dist/
+build/
+coverage/
+.tmp/
+.cache/
+
+# Generated Prisma client
+src/generated/prisma/
+
+# Local database and Docker overrides
+docker-compose.override.yml
+*.sqlite
+*.sqlite3
+
+# OS files
 .DS_Store
 Thumbs.db
-/src/generated/prisma
+ehthumbs.db
+Desktop.ini
+
+# Editor settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Local agent/session files
+.agents/
