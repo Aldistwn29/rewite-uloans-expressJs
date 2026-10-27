@@ -81,14 +81,16 @@ cp .env.example .env
 
 Never commit `.env` or any file containing real credentials. Use strong, unique values for secrets outside local development.
 
-> **Note:** the current authentication middleware and controller still use an internal JWT secret constant. Moving that value to `process.env.JWT_SECRET` is recommended before deploying the application.
+Docker Compose requires `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` to be supplied through the environment. It will fail fast instead of starting with missing database credentials.
+
+> **Security notice:** a previous commit exposed a database password. Treat that password as compromised, rotate it in the database and local environment, and remove the exposed value from any shared secret store.
 
 ## Available Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm start` | Starts the Express server |
-| `npm test` | Placeholder test command; tests are not configured yet |
+| Command     | Description                                            |
+| ----------- | ------------------------------------------------------ |
+| `npm start` | Starts the Express server                              |
+| `npm test`  | Placeholder test command; tests are not configured yet |
 
 ## API Overview
 
@@ -290,16 +292,16 @@ The API uses JSON error responses. A typical error looks like this:
 
 Common status codes:
 
-| Status | Meaning |
-| --- | --- |
-| `201` | Resource created |
-| `200` | Request completed successfully |
-| `400` | Invalid or missing request data |
-| `401` | Authentication is missing or credentials are invalid |
-| `403` | JWT token is invalid or expired |
-| `404` | Resource was not found |
-| `409` | Resource conflicts with existing data |
-| `422` | Request is valid but violates a business rule |
+| Status | Meaning                                              |
+| ------ | ---------------------------------------------------- |
+| `201`  | Resource created                                     |
+| `200`  | Request completed successfully                       |
+| `400`  | Invalid or missing request data                      |
+| `401`  | Authentication is missing or credentials are invalid |
+| `403`  | JWT token is invalid or expired                      |
+| `404`  | Resource was not found                               |
+| `409`  | Resource conflicts with existing data                |
+| `422`  | Request is valid but violates a business rule        |
 
 ## Data Persistence Warning
 
@@ -316,7 +318,7 @@ For production, replace the in-memory storage with a database repository and has
 ## Recommended Next Steps
 
 1. Persist users and loans in PostgreSQL.
-2. Move `JWT_SECRET` to environment variables.
+2. Move `JWT_SECRET` to environment variables throughout the application.
 3. Hash passwords with a password-hashing library.
 4. Add request validation with a schema validation library.
 5. Add automated unit and integration tests.
