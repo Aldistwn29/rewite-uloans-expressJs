@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProfile, updateProfile } from '../controller/user.controller.js';
+import { getProfile, updateProfile } from '../controllers/user.controller.js';
 import { verfiyToken } from '../middleware/auth.middleware.js';
 
 const router = Router();

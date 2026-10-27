@@ -1,69 +1,64 @@
-import { LoanRepository } from "../repository/loan.repository.js";
+import { LoanRepository } from '../repositories/loan.repository.js';
 
+export class LoanService {
+  static async createLoan(userId, tenor, amount) {
+    const numericAmount = Number(amount);
+    const numericTenor = Number(tenor);
 
-export class loanService {
-    static createLoan(userId, tenor, amount){
-        if(amount === undefined || tenor === undefined){
-            throw {
-                status: 400,
-                message: 'field amount and tenor wajib diisi'
-            };
-        }
-
-        if(amount < 500000 || tenor < 3){
-            throw {
-                status: 422,
-                message: 'Jumlah pinjaman minimal 500000 dan tenor minimal 3 bulan'
-            };
-        }
-
-        return LoanRepository.createLoan({
-            userId,
-            amount: Number(amount),
-            tenor: Number(tenor)
-        });
+    if (!Number.isFinite(numericAmount) || !Number.isFinite(numericTenor)) {
+      throw {
+        status: 400,
+        message: 'amount dan tenor harus berupa angka',
+      };
+    }
+    if (numericAmount < 500000 || numericTenor < 3) {
+      throw {
+        status: 422,
+        message: 'Jumlah pinjaman minimal 500000 dan tenor minimal 3 bulan',
+      };
     }
 
-    static getUserLoans(userId){
-        return LoanRepository.findAllUserId(userId);
+    return LoanRepository.createLoan({
+      userId,
+      amount: numericAmount,
+      tenor: numericTenor,
+    });
+  }
+
+  static async getUserLoans(userId) {
+    return LoanRepository.findAllByUserId(userId);
+  }
+
+  static async getLoanDetails(loanId, userId) {
+    const loan = await LoanRepository.findByIdAndUserId(loanId, userId);
+
+    if (!loan) {
+      throw {
+        status: 404,
+        message: 'Pengajuan pinjaman tidak ditemukan',
+      };
     }
 
-    static getLoanDetails(loanId){
-        const loan = LoanRepository.findById(loanId);
+    return loan;
+  }
 
-        if(!loan){
-            throw{
-                status: 404,
-                message: `Pinjaman dengan ID ${loanId} tidak ditemukan`
-            }
-        }
+  static async cancelLoan(loanId, userId) {
+    const loan = await LoanRepository.findByIdAndUserId(loanId, userId);
 
-        // security
-        if(loan.userId !== userId){
-            throw{
-                status: 403,
-                message: 'Anda tidak memiliki hak akses untuk melihat data pinjaman ini.'
-            }
-        }
-
-        return loan;
+    if (!loan) {
+      throw {
+        status: 404,
+        message: 'Pengajuan pinjaman tidak ditemukan',
+      };
     }
 
-    static cancelLoan(loanId, userId){
-        const loan = LoanRepository.findById(loanId);
-
-        if(!loan){
-            throw{ status: 404, message: `Pinjaman dengan ID ${loanId} tidak ditemukan` };
-        }
-
-        if(loan.userId !== userId){
-            throw{ status: 403, message: 'Anda tidak memiliki hak akses untuk membatalkan pinjaman ini.'};
-        }
-        
-        if (loan.status !== 'PENDING') {
-        throw { status: 422, message: `Pengajuan pinjaman tidak dapat dibatalkan karena status saat ini adalah ${loan.status}.` };
-        }
-
-        return LoanRepository.updateLoanStatus(loanId, 'CANCELED');
+    if (loan.status !== 'PENDING') {
+      throw {
+        status: 422,
+        message: `Pengajuan tidak dapat dibatalkan karena status saat ini adalah ${loan.status}.`,
+      };
     }
+
+    return LoanRepository.updateLoanStatus(loanId, 'CANCELLED');
+  }
 }

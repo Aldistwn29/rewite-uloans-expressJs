@@ -12,15 +12,11 @@ app.use('/api/v1', loanRoutes);
 app.use('/api/v1', authRoutes);
 app.use('/api/v1', userRoutes);
 
-
-
-
 app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'UP',
-        message: 'Uloan API is running',
-    });
+  res.status(200).json({
+    status: 'UP',
+    message: 'Uloan API is running',
+  });
 });
-
 
 export default app;
