@@ -1,0 +1,17 @@
+services:
+  postgress_db:
+    image: postgres:15-alpine
+    container_name: uloans_application
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: uloans
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: uloans_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgress_data:/var/lib/postgresql/data
+
+volumes:
+  postgress_data:
+    driver: local
